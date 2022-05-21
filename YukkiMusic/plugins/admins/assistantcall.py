@@ -1,32 +1,13 @@
-import asyncio
-from datetime import datetime, timedelta
-from typing import Union
+
 from pyrogram import filters
 from pyrogram.types import Message
 
 from config import BANNED_USERS
 from strings import get_command
 from YukkiMusic import app
-from pyrogram import Client
-from pyrogram.errors import (ChatAdminRequired,
-                             UserAlreadyParticipant,
-                             UserNotParticipant)
-from pyrogram.types import InlineKeyboardMarkup
-
-import config
-from strings import get_string
-from YukkiMusic import LOGGER, YouTube, app
-from YukkiMusic.misc import db
-from YukkiMusic.utils.database import (add_active_chat,
-                                       add_active_video_chat,
-                                       get_assistant,
-                                       get_audio_bitrate, get_lang,
-                                       get_loop, get_video_bitrate,
-                                       group_assistant, is_autoend,
-                                       music_on, mute_off,
-                                       remove_active_chat,
-                                       remove_active_video_chat,
-                                       set_loop)
+from YukkiMusic.core.call import Yukki
+from YukkiMusic.utils.database import(remove_active_chat,group_assistant,get_assistant,remove_active_video_chat)
+from YukkiMusic.utils.decorators import AdminRightsCheck
 
 
 # Commands
