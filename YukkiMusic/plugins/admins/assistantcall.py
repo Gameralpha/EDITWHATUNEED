@@ -43,7 +43,6 @@ ASST_COMMAND = get_command("ASST_COMMAND")
 async def join_assistant(self, original_chat_id, chat_id):
     chat = await app.get_chat(chat_id)
     if chat.username:
-    try:
         await userbot.join_chat(chat.username)
     else:
          try:
