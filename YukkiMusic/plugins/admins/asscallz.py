@@ -8,8 +8,13 @@ from YukkiMusic.core.call import Yukki
 from YukkiMusic.utils.database import(remove_active_chat,group_assistant,get_assistant,remove_active_video_chat)
 from YukkiMusic.utils.decorators import AdminRightsCheck
 
+
+# Commands
+ASST_COMMAND = get_command("ASST_COMMAND")
+
+
 @app.on_message(
-    filters.command("userbotjoin")
+    filters.command(ASST_COMMAND)
     & filters.group
     & ~filters.edited
     & ~BANNED_USERS
