@@ -25,17 +25,17 @@ async def join_chat(self, original_chat_id, chat_id):
     await userbot.join_chat(chat.username)
     invitelink = chat.invite_link
     await userbot.join_chat(chat.username)
-    try:
-        invitelink = chat.invite_link
-        if not invitelink:
+  else:
+       invitelink = chat.invite_link
+       if not invitelink:
             invitelink = (await app.export_chat_invite_link(chat_id))
             await userbot.join_chat(invitelink)
-        if invitelink.startswith("https://t.me/+"):
+       if invitelink.startswith("https://t.me/+"):
             invitelink = invitelink.replace(
                 "https://t.me/+", "https://t.me/joinchat/"
             )
         await userbot.join_chat(invitelink)
         await remove_active_chat(chat_id)
         return await userbot.send_message(chat_id, "✅ userbot joined this chat")
-    except UserAlreadyParticipant:
+        except UserAlreadyParticipant:
         return await user.send_message(chat_id, "✅ userbot already in this chat")
