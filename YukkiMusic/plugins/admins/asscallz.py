@@ -11,7 +11,7 @@ from YukkiMusic.utils.decorators import AdminRightsCheck
 
 # Commands
 
-@Client.on_message(
+@app.on_callback_query(filters.regex("PanelMarkup") & ~BANNED_USERS)
     command(["userbotjoin", f"userbotjoin@{BOT_USERNAME}"]) & filters
 )
 @AdminRightsCheck
