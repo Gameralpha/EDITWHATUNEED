@@ -10,14 +10,9 @@ from YukkiMusic.utils.decorators import AdminRightsCheck
 
 
 # Commands
-ASST_COMMAND = get_command("ASST_COMMAND")
 
-
-@app.on_message(
-    filters.command(ASST_COMMAND)
-    & filters.group
-    & ~filters.edited
-    & ~BANNED_USERS
+@Client.on_message(
+    command(["userbotjoin", f"userbotjoin@{BOT_USERNAME}"]) & filters
 )
 @AdminRightsCheck
 async def join_chat(self, original_chat_id, chat_id):
