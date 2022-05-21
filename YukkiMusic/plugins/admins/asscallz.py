@@ -22,11 +22,11 @@ ASST_COMMAND = get_command("ASST_COMMAND")
 @AdminRightsCheck
 async def join_chat(self, original_chat_id, chat_id):
   language = await get_lang(original_chat_id)
-        _ = get_string(language)
-        userbot = await get_assistant(chat_id)
-    get = await app.get_chat_member(chat_id, userbot.id)
-    chat = await app.get_chat(chat_id)
-    if chat.username:
+  _ = get_string(language)
+  userbot = await get_assistant(chat_id)
+  get = await app.get_chat_member(chat_id, userbot.id)
+  chat = await app.get_chat(chat_id)
+  if chat.username:
     await userbot.join_chat(chat.username)
     invitelink = chat.invite_link
     await userbot.join_chat(chat.username)
