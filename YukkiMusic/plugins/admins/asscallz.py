@@ -9,7 +9,7 @@ from YukkiMusic.utils.database import(remove_active_chat,group_assistant,get_ass
 from YukkiMusic.utils.decorators import AdminRightsCheck
 
 @app.on_message(
-    filters.command(["userbotjoin", f"userbotjoin@{BOT_USERNAME}"])
+    filters.command("userbotjoin")
     & filters.group
     & ~filters.edited
     & ~BANNED_USERS
