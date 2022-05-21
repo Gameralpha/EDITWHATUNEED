@@ -39,8 +39,8 @@ async def join_chat(self, original_chat_id, chat_id):
             invitelink = invitelink.replace(
                 "https://t.me/+", "https://t.me/joinchat/"
             )
-        await userbot.join_chat(invitelink)
-        await remove_active_chat(chat_id)
-        return await userbot.send_message(chat_id, "✅ userbot joined this chat")
-        except UserAlreadyParticipant:
-        return await user.send_message(chat_id, "✅ userbot already in this chat")
+            await userbot.join_chat(invitelink)
+            await remove_active_chat(chat_id)
+            return await userbot.send_message(chat_id, "✅ userbot joined this chat")
+            except UserAlreadyParticipant:
+            return await user.send_message(chat_id, "✅ userbot already in this chat")
