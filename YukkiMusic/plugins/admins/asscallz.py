@@ -8,11 +8,11 @@ from YukkiMusic.core.call import Yukki
 from YukkiMusic.utils.database import(remove_active_chat,group_assistant,get_assistant,remove_active_video_chat)
 from YukkiMusic.utils.decorators import AdminRightsCheck
 
-
-# Commands
-
-@app.on_callback_query(filters.regex("PanelMarkup") & ~BANNED_USERS)
-    command(["userbotjoin", f"userbotjoin@{BOT_USERNAME}"]) & filters
+@app.on_message(
+    filters.command(["userbotjoin", f"userbotjoin@{BOT_USERNAME}"])
+    & filters.group
+    & ~filters.edited
+    & ~BANNED_USERS
 )
 @AdminRightsCheck
 async def join_chat(self, original_chat_id, chat_id):
