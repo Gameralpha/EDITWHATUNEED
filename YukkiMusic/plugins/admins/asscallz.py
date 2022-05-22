@@ -1,13 +1,25 @@
+import random
+from typing import Dict, List, Union
+
 from pyrogram import filters
-from pyrogram.types import Message
+from pyrogram import Client
+from pyrogram.errors import UserAlreadyParticipant, UserNotParticipant
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaPhoto, Message)
 
-from config import BANNED_USERS
-from strings import get_command
-from YukkiMusic import app
-from YukkiMusic.core.call import Yukki
-from YukkiMusic.utils.database import(remove_active_chat,group_assistant,get_assistant,remove_active_video_chat)
-from YukkiMusic.utils.decorators import AdminRightsCheck
-
+import config
+from strings import get_string
+from YukkiMusic.misc import db
+from YukkiMusic.utils.database import (add_active_chat,
+                                       add_active_video_chat,
+                                       get_assistant,
+                                       get_audio_bitrate, get_lang,
+                                       get_loop, get_video_bitrate,
+                                       group_assistant, is_autoend,
+                                       music_on, mute_off,
+                                       remove_active_chat,
+                                       remove_active_video_chat,
+                                       set_loop)
 
 # Commands
 ASST_COMMAND = get_command("ASST_COMMAND")
@@ -20,40 +32,83 @@ ASST_COMMAND = get_command("ASST_COMMAND")
     & ~BANNED_USERS
 )
 @AdminRightsCheck
-async def join_chat(self, original_chat_id, chat_id):
-  language = await get_lang(original_chat_id)
-  _ = get_string(language)
-  userbot = await get_assistant(chat_id)
-  get = await app.get_chat_member(chat_id, userbot.id)
-  chat = await app.get_chat(chat_id)
-  invitelink = await app.export_chat_invite_link(
-                        message.chat.id
-                    )
-  if chat.username:
-    await userbot.join_chat(chat.username)
-    invitelink = chat.invite_link
-    await userbot.join_chat(chat.username)
-  else:
-       invitelink = chat.invite_link
-       if not invitelink:
-            invitelink = (await app.export_chat_invite_link(chat_id))
-            await userbot.join_chat(invitelink)
-       if invitelink.startswith("https://t.me/+"):
-            invitelink = invitelink.replace(
-                "https://t.me/+", "https://t.me/joinchat/"
+@app.on_callback_query(filters.regex("unban_assistant"))
+async def unban_assistant_(_, CallbackQuery):
+    callback_data = CallbackQuery.data.strip()
+    callback_request = callback_data.split(None, 1)[1]
+    query, user_id = callback_request.split("|")
+    a = await app.get_chat_member(CallbackQuery.message.chat.id, BOT_ID)
+    if not a.can_restrict_members:
+        return await CallbackQuery.answer(
+            "I am not having ban/unban user permission. Ask any admin to unban the assistant.",
+            show_alert=True,
+        )
+    else:
+        try:
+            await app.unban_chat_member(
+                CallbackQuery.message.chat.id, user_id
             )
-            await userbot.join_chat(invitelink)
-            await remove_active_chat(chat_id)
-            return await userbot.send_message(chat_id, "✅ userbot joined this chat")
-          
-if message.chat.username:
+        except:
+            return await CallbackQuery.answer(
+                "Failed to unban",
+                show_alert=True,
+            )
+        return await CallbackQuery.edit_message_text(
+            "Assistant Unbanned. Try Playing Now."
+        )
+
+
+def AssistantAdd(mystic):
+    async def wrapper(_, message):
+        _assistant = await get_assistant(message.chat.id, "assistant")
+        if not _assistant:
+            ran_ass = random.choice(random_assistant)
+            assis = {
+                "saveassistant": ran_ass,
+            }
+            await save_assistant(message.chat.id, "assistant", assis)
+        else:
+            ran_ass = _assistant["saveassistant"]
+        if ran_ass not in random_assistant:
+            ran_ass = random.choice(random_assistant)
+            assis = {
+                "saveassistant": ran_ass,
+            }
+            await save_assistant(message.chat.id, "assistant", assis)
+        ASS_ID, ASS_NAME, ASS_USERNAME, ASS_ACC = await get_assistant_details(
+            ran_ass
+        )
+        try:
+            b = await app.get_chat_member(message.chat.id, ASS_ID)
+            key = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="🗑 Unban Assistant",
+                            callback_data=f"unban_assistant a|{ASS_ID}",
+                        )
+                    ],
+                ]
+            )
+            if b.status == "kicked":
+                return await message.reply_text(
+                    f"Assistant Account[{ASS_ID}] is banned.\nUnban it first to use Music Bot\n\nUsername: @{ASS_USERNAME}",
+                    reply_markup=key,
+                )
+            if b.status == "banned":
+                return await message.reply_text(
+                    f"Assistant Account[{ASS_ID}] is banned.\nUnban it first to use Music Bot\n\nUsername: @{ASS_USERNAME}",
+                    reply_markup=key,
+                )
+        except UserNotParticipant:
+            if message.chat.username:
                 try:
-                    await userbot.join_chat(message.chat.username)
+                    await ASS_ACC.join_chat(message.chat.username)
                 except UserAlreadyParticipant:
                     pass
                 except Exception as e:
                     await message.reply_text(
-                        f"__Assistant Failed To Join__\n\n**Reason**:peer invalid kindly add manuvally {e}"
+                        f"__Assistant Failed To Join__\n\n**Reason**: {e}"
                     )
                     return
             else:
@@ -65,13 +120,17 @@ if message.chat.username:
                         invitelink = invitelink.replace(
                             "https://t.me/+", "https://t.me/joinchat/"
                         )
-                    await userbot.join_chat(invitelink)
+                    await ASS_ACC.join_chat(invitelink)
                     await message.reply(
-                        f"userbot Joined Successfully",
+                        f"{ASS_NAME} Joined Successfully",
                     )
                 except UserAlreadyParticipant:
                     pass
                 except Exception as e:
                     await message.reply_text(
-                        f"__Assista Faile**Reason**:  {e} "
+                        f"__Assistant Failed To Join__\n\n**Reason**: {e}"
                     )
+                    return
+        return await mystic(_, message)
+
+    return wrapper
