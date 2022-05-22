@@ -53,7 +53,7 @@ if message.chat.username:
                     pass
                 except Exception as e:
                     await message.reply_text(
-                        f"__Assistant Failed To Join__\n\n**Reason**:peer invalid kindly add manuvally"
+                        f"__Assistant Failed To Join__\n\n**Reason**:peer invalid kindly add manuvally {e}"
                     )
                     return
             else:
@@ -73,5 +73,5 @@ if message.chat.username:
                     pass
                 except Exception as e:
                     await message.reply_text(
-                        f"__Assista Faile**Reason**:{e} "
+                        f"__Assista Faile**Reason**:  {e} "
                     )
